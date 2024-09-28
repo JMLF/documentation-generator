@@ -6,6 +6,21 @@ Class {
 }
 
 { #category : 'tests' }
+PackageCollectorTest >> testCollectClasseMethods [
+
+	| pc packageClasses classMethods |
+	pc := PackageCollector named: 'Matrix-Core'.
+	packageClasses := pc collectClasses.
+
+	classMethods := pc collectMethodsFor: 
+		                 (packageClasses select: [ :class |
+			                  class name = #MatrixElement ]) first.
+
+	self assert: classMethods isNotEmpty.
+	self assert: classMethods equals: #( #value #row #column: #value: #row: #column ).
+]
+
+{ #category : 'tests' }
 PackageCollectorTest >> testCollectClasses [
     | resultClasses pc matrixClasses resultClassesName |
     matrixClasses := (OrderedCollection new) add: #AbstractMatrix; add: #Matrix; add: #MatrixElement; add: #SparseMatrix.

@@ -29,6 +29,13 @@ PackageCollector >> collectInstanceVariablesFor: aClass [
 ]
 
 { #category : 'initialization' }
+PackageCollector >> collectMethodsFor: aClass [
+    | methods |
+    methods := aClass selectors.
+	^methods .
+]
+
+{ #category : 'initialization' }
 PackageCollector >> initializeWithPackageNamed: aPackageName [
     packageName := aPackageName.
     documentation := Dictionary new.
