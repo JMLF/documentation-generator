@@ -78,6 +78,60 @@ PackageCollector >> generateDocumentation [
 ]
 
 { #category : 'initialization' }
+PackageCollector >> generateDocumentationString [ 
+"String with all documentation to display in transcript"
+    | stream |
+    stream := WriteStream on: String new.
+    
+    stream 
+        nextPutAll: 'Documentation for package: ';
+        nextPutAll: packageName;
+        cr; cr.
+    
+    documentation keysAndValuesDo: [ :className :classInfo |
+        stream
+            nextPutAll: 'Class: ';
+            nextPutAll: className;
+            cr;
+            nextPutAll: '  Superclass: ';
+            nextPutAll: (classInfo at: #superclass);
+            cr.
+        
+        stream nextPutAll: '  Subclasses: '.
+        (classInfo at: #subclasses)
+            ifEmpty: [ stream nextPutAll: 'None' ]
+            ifNotEmpty: [ :subclasses | 
+                subclasses 
+                    do: [ :subclass | stream nextPutAll: subclass ]
+                    separatedBy: [ stream space ] ].
+        stream cr.
+        
+        stream nextPutAll: '  Instance Variables: '.
+        (classInfo at: #instanceVariables)
+            ifEmpty: [ stream nextPutAll: 'None' ]
+            ifNotEmpty: [ :vars | 
+                vars 
+                    do: [ :var | stream nextPutAll: var ]
+                    separatedBy: [ stream space ] ].
+        stream cr.
+        
+        stream 
+            nextPutAll: '  Methods:';
+            cr.
+        (classInfo at: #methods) do: [ :method |
+            stream
+                nextPutAll: '    ';
+                nextPutAll: method;
+                cr ].
+        
+        stream cr.
+    ].
+    
+    ^stream contents
+
+]
+
+{ #category : 'initialization' }
 PackageCollector >> initializeWithPackageNamed: aPackageName [
     packageName := aPackageName.
     documentation := Dictionary new.
