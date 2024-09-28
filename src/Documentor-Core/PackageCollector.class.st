@@ -36,6 +36,22 @@ PackageCollector >> collectMethodsFor: aClass [
 ]
 
 { #category : 'initialization' }
+PackageCollector >> generateDocumentation [
+"Build the documentation array with all the package informations"
+    | classes |
+    classes := self collectClasses.
+    classes do: [:class |
+        | classInfo |
+        classInfo := Dictionary new.
+        classInfo at: #superclass put: class superclass name.
+        classInfo at: #subclasses put: (class subclasses collect: [:subclass | subclass name]).
+        classInfo at: #instanceVariables put: (self collectInstanceVariablesFor: class).
+        classInfo at: #methods put: (self collectMethodsFor: class).
+        documentation at: class name put: classInfo.
+    ].
+]
+
+{ #category : 'initialization' }
 PackageCollector >> initializeWithPackageNamed: aPackageName [
     packageName := aPackageName.
     documentation := Dictionary new.
