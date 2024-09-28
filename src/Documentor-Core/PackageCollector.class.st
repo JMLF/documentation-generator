@@ -73,6 +73,19 @@ PackageCollector >> generateDocumentation [
         classInfo at: #subclasses put: (class subclasses collect: [:subclass | subclass name]).
         classInfo at: #instanceVariables put: (self collectInstanceVariablesFor: class).
         classInfo at: #methods put: (self collectMethodsFor: class).
+
+        "Add information about instance variable references"
+        classInfo at: #instanceVariableReferences put: (
+            (self collectInstanceVariablesFor: class) collect: [:var |
+                var -> (self collectMethodsReferencingInstanceVariable: var forClass: class)
+            ]) asDictionary.
+        
+        "Add information about method senders"
+        classInfo at: #methodSenders put: (
+            (self collectMethodsFor: class) collect: [:method |
+                method -> (self collectSendersForMethod: method forClass: class)
+            ]) asDictionary.
+
         documentation at: class name put: classInfo.
     ].
 ]
@@ -80,7 +93,7 @@ PackageCollector >> generateDocumentation [
 { #category : 'initialization' }
 PackageCollector >> generateDocumentationString [ 
 "String with all documentation to display in transcript"
-    | stream |
+       | stream |
     stream := WriteStream on: String new.
     
     stream 
@@ -115,14 +128,41 @@ PackageCollector >> generateDocumentationString [
                     separatedBy: [ stream space ] ].
         stream cr.
         
-        stream 
-            nextPutAll: '  Methods:';
-            cr.
+        stream nextPutAll: '  Methods:'; cr.
         (classInfo at: #methods) do: [ :method |
             stream
                 nextPutAll: '    ';
                 nextPutAll: method;
                 cr ].
+        
+        stream nextPutAll: '  Instance Variable References:'; cr.
+        (classInfo at: #instanceVariableReferences) keysAndValuesDo: [ :var :methods |
+            stream
+                nextPutAll: '    ';
+                nextPutAll: var;
+                nextPutAll: ' referenced in: ';
+                nextPutAll: (methods joinUsing: ', ');
+                cr ].
+        
+        stream nextPutAll: '  Method Senders:'; cr.
+        (classInfo at: #methodSenders) keysAndValuesDo: [ :method :senders |
+            stream
+                nextPutAll: '    ';
+                nextPutAll: method asString;
+                nextPutAll: ' called by: '.
+            
+            senders 
+                ifEmpty: [ stream nextPutAll: 'None' ]
+                ifNotEmpty: [
+                    | senderNames |
+                    senderNames := senders collect: [:sender | 
+                        sender selector ifNotNil: [:sel | sel asString] ifNil: ['<unknown>']].
+                    senderNames
+                        do: [:name | stream nextPutAll: name]
+                        separatedBy: [stream nextPutAll: ', ']
+                ].
+            stream cr.
+        ].
         
         stream cr.
     ].
