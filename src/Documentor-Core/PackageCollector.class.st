@@ -1,0 +1,27 @@
+Class {
+	#name : 'PackageCollector',
+	#superclass : 'Object',
+	#instVars : [
+		'packageName',
+		'documentation'
+	],
+	#category : 'Documentor-Core',
+	#package : 'Documentor-Core'
+}
+
+{ #category : 'instance creation' }
+PackageCollector class >> named: aPackageName [
+	^self new initializeWithPackageNamed: aPackageName ; yourself 
+]
+
+{ #category : 'as yet unclassified' }
+PackageCollector >> collectClasses [
+"Collect all classes from a package"
+    ^ (RPackageSet named: packageName) classes
+]
+
+{ #category : 'initialization' }
+PackageCollector >> initializeWithPackageNamed: aPackageName [
+    packageName := aPackageName.
+    documentation := Dictionary new.
+]
