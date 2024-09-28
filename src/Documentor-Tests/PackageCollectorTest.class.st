@@ -48,3 +48,17 @@ PackageCollectorTest >> testCollectInstanceVar [
 	self assert: classInstVars isNotEmpty.
 	self assert: classInstVars equals: #( #row #column #value )
 ]
+
+{ #category : 'tests' }
+PackageCollectorTest >> testCollectMethodsReferencingInstanceVariable [
+    | pc packageClasses class methodsReferencingValue |
+    pc := PackageCollector named: 'Matrix-Core'.
+    packageClasses := pc collectClasses.
+    
+    class := (packageClasses select: [:class | class name = #MatrixElement]) first.
+    
+    methodsReferencingValue := pc collectMethodsReferencingInstanceVariable: 'value' forClass: class.
+    
+    self assert: methodsReferencingValue isNotEmpty.
+    self assert: methodsReferencingValue equals: #(#value #value:).
+]

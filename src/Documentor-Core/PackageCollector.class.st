@@ -36,6 +36,18 @@ PackageCollector >> collectMethodsFor: aClass [
 ]
 
 { #category : 'initialization' }
+PackageCollector >> collectMethodsReferencingInstanceVariable: anInstanceVar forClass: aClass [
+"Collect all methods that reference a given instance variable"
+    | methodsReferencing |
+    methodsReferencing := aClass methodDictionary select: [:method |
+		"We're looking in the ast if any nodes isVarabiale & instanceVar and correpond to our name "
+        method ast allChildren anySatisfy: [:node |
+            node isVariable and: [
+                node isInstanceVariable and: [node name = anInstanceVar]]]].
+    ^methodsReferencing keys
+]
+
+{ #category : 'initialization' }
 PackageCollector >> generateDocumentation [
 "Build the documentation array with all the package informations"
     | classes |
