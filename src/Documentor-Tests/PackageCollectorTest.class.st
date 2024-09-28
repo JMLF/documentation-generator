@@ -18,3 +18,18 @@ PackageCollectorTest >> testCollectClasses [
 	self assert: ( resultClassesName includes: matrixClasses )  .
 
 ]
+
+{ #category : 'tests' }
+PackageCollectorTest >> testCollectInstanceVar [
+
+	| pc packageClasses classInstVars |
+	pc := PackageCollector named: 'Matrix-Core'.
+	packageClasses := pc collectClasses.
+
+	classInstVars := pc collectInstanceVariablesFor:
+		                 (packageClasses select: [ :class |
+			                  class name = #MatrixElement ]) first.
+
+	self assert: classInstVars isNotEmpty.
+	self assert: classInstVars equals: #( #row #column #value )
+]

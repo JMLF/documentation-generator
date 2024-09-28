@@ -21,6 +21,14 @@ PackageCollector >> collectClasses [
 ]
 
 { #category : 'initialization' }
+PackageCollector >> collectInstanceVariablesFor: aClass [
+"Collect all instance variable for a class"
+    | vars |
+    vars := aClass allInstVarNames.
+    ^vars.
+]
+
+{ #category : 'initialization' }
 PackageCollector >> initializeWithPackageNamed: aPackageName [
     packageName := aPackageName.
     documentation := Dictionary new.
