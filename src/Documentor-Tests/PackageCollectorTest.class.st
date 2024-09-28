@@ -62,3 +62,17 @@ PackageCollectorTest >> testCollectMethodsReferencingInstanceVariable [
     self assert: methodsReferencingValue isNotEmpty.
     self assert: methodsReferencingValue equals: #(#value #value:).
 ]
+
+{ #category : 'tests' }
+PackageCollectorTest >> testCollectSendersForMethod [
+    | pc packageClasses class senders |
+    pc := PackageCollector named: 'Matrix-Core'.
+    packageClasses := pc collectClasses.
+    
+    class := (packageClasses select: [:c | c name = #Matrix]) first.
+    
+    senders := pc collectSendersForMethod: #validateRow:column: forClass: class.
+    
+    self assert: senders isNotEmpty.
+
+]

@@ -48,6 +48,20 @@ PackageCollector >> collectMethodsReferencingInstanceVariable: anInstanceVar for
 ]
 
 { #category : 'initialization' }
+PackageCollector >> collectSendersForMethod: aMethod forClass: aClass [ 
+"Collect all methods that send a message to a given method"
+    | senders |
+    senders := OrderedCollection new.
+    "Not sure if we want all subblasses here"
+    aClass withAllSubclassesDo: [:each |
+        each methodsDo: [:method |
+            (method ast sentMessages includes: aMethod)
+                ifTrue: [senders add: method]]].
+    
+    ^senders
+]
+
+{ #category : 'initialization' }
 PackageCollector >> generateDocumentation [
 "Build the documentation array with all the package informations"
     | classes |
